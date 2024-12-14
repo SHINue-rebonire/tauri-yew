@@ -8,10 +8,6 @@ pub fn button_style() -> Style {
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        border-radius: 4px;
-        padding: 8px 12px;
-        transition: 0.2s all;
-        font-weight: bold;
 
         &.primary {
             background-color: #0000CC;
@@ -25,8 +21,8 @@ pub fn button_style() -> Style {
         }
 
         &.secondary {
-            border: 1px solid #0000CC;
             background-color: #FFF;
+            border: 1px solid #0000CC;
             color: #0000CC;
         }
         &.secondary:hover {
@@ -34,6 +30,7 @@ pub fn button_style() -> Style {
             color: #0000FF;
         }
         &.secondary:active {
+            background-color: #DDD;
             border-color: #000099;
             color: #000099;
         }
@@ -41,7 +38,6 @@ pub fn button_style() -> Style {
         &.warning {
             background-color: #CC0000;
             color: #FFF;
-            border-radius: 4px;
         }
         &.warning:not(:disabled):hover {
             background-color: #FF0000;
@@ -53,7 +49,6 @@ pub fn button_style() -> Style {
         &.success {
             background-color: #00CC00;
             color: #FFF;
-            border-radius: 4px;
         }
         &.success:not(:disabled):hover {
             background-color: #00FF00;
@@ -64,17 +59,13 @@ pub fn button_style() -> Style {
 
         &.medium, &.small {
             font-style: normal;
-            font-weight: 700;
-            line-height: 155%;
             transition: 0.2s all;
         }
         &.medium {
-            height: 38px;
             font-size: 14px;
             padding: 8px 12px;
         }
         &.small {
-            height: 31px;
             font-size: 12px;
             padding: 6px 8px;
         }

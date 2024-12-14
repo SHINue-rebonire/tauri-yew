@@ -4,7 +4,6 @@ use crate::components::atoms::button::button::{ButtonSize, ButtonVariant};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
-use web_sys::console;
 use yew::prelude::*;
 
 #[wasm_bindgen]
@@ -16,6 +15,11 @@ extern "C" {
 #[derive(Serialize, Deserialize)]
 struct GreetArgs<'a> {
     name: &'a str,
+}
+
+#[derive(Serialize, Deserialize)]
+struct ButtonLabelArgs<'a> {
+    label: &'a str,
 }
 
 #[function_component(App)]
@@ -59,9 +63,42 @@ pub fn app() -> Html {
         })
     };
 
-    let on_run_click = Callback::from(|_| {
-        console::log_1(&"Button clicked!".into());
-    });
+    let button_msg = use_state(|| String::new());
+    let button_label = use_state(|| String::new());
+    {
+        let button_msg = button_msg.clone();
+        let button_label = button_label.clone();
+
+        use_effect_with(button_label.clone(), move |label| {
+            let label_value = label.clone();
+
+            spawn_local(async move {
+                if label_value.is_empty() {
+                    return;
+                }
+
+                let args = serde_wasm_bindgen::to_value(&ButtonLabelArgs {
+                    label: &*label_value,
+                })
+                .unwrap();
+
+                let js_value = invoke("button_label", args).await.as_string().unwrap();
+                button_msg.set(js_value);
+            });
+
+            || {}
+        });
+    }
+
+    let on_click = {
+        let button_label = button_label.clone();
+        move |label: &'static str| {
+            let button_label = button_label.clone();
+            Callback::from(move |_| {
+                button_label.set(label.to_string());
+            })
+        }
+    };
 
     html! {
             <main class="container">
@@ -86,33 +123,34 @@ pub fn app() -> Html {
                 <div class="btn-row">
                     <Button
                         label="Primary"
-                        on_click={on_run_click.clone()}
+                        on_click={on_click("Primary")}
                         disabled={false}
                         size={ButtonSize::Medium}
                         variant={ButtonVariant::Primary}
                     />
                     <Button
                         label="Secondary"
-                        on_click={on_run_click.clone()}
+                        on_click={on_click("Secondary")}
                         disabled={false}
                         size={ButtonSize::Medium}
                         variant={ButtonVariant::Secondary}
                     />
                     <Button
                         label="Warning"
-                        on_click={on_run_click.clone()}
+                        on_click={on_click("Warning")}
                         disabled={false}
                         size={ButtonSize::Medium}
                         variant={ButtonVariant::Warning}
                     />
                     <Button
                         label="Success"
-                        on_click={on_run_click.clone()}
+                        on_click={on_click("Success")}
                         disabled={false}
                         size={ButtonSize::Medium}
                         variant={ButtonVariant::Success}
                     />
                 </div>
+                <p>{ &*button_msg }</p>
             </main>
     }
 }
